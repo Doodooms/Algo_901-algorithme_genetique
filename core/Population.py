@@ -1,7 +1,8 @@
-from Individu import individu
+from Individu import Individu
 
-class population:
-    def __init__(self, liste_individus : list[individu]):
+
+class Population:
+    def __init__(self, liste_individus: list[Individu]):
         self.liste_individus = liste_individus
 
     def __str__(self):

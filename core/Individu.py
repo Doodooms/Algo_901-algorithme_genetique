@@ -7,4 +7,4 @@ class individu():
         self.elite = False # Pour s'amuser lol
 
     def __str__(self):
-        return f"L'individu numéro {self.id} a pour coordonnées : {self.coordonnees}"
+        return f"ID : {self.id}, coordonnées : {self.coordonnees}"

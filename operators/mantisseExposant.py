@@ -1,19 +1,50 @@
-#from codage import Codage
+from Codage import Codage
 
-from email.errors import NoBoundaryInMultipartDefect
-
-
-class MantisseExposant:
+def entier_en_binaire(n):
     """
-    Classe représentant un nombre en mantisse-exposant.
-    Pour initialiser un objet de cette classe, on donne simplement un nombre réel.
-    La mantisse et l'exposant sont calculés automatiquement.
-    D'abord, sous forme decimale, puis convertis en binaire.
+    Fonction qui convertit un entier en binaire avec un bit de signe.
+    Le premier bit indique le signe (0 pour positif, 1 pour négatif).
+    Les bits suivants représentent la valeur absolue de l'entier en binaire.
     """
-    def __init__(self, reel : float, precision : int = 5):
+    if n == 0:
+        return '0'  # Representation binaire de 0
+
+    bit_de_signe = '0' if n >= 0 else '1'
+    valeur_absolue = abs(n)
+    bits_valeur = bin(valeur_absolue)[2:]  # Conversion en binaire sans le préfixe '0b'
+
+    return bit_de_signe + bits_valeur
+
+def binaire_en_entier(binaire):
+    """
+    Fonction qui convertit une représentation binaire avec un bit de signe en entier.
+    Le premier bit indique le signe (0 pour positif, 1 pour négatif).
+    Les bits suivants représentent la valeur absolue de l'entier en binaire.
+    """
+    if len(binaire) == 0:
+        raise ValueError("La chaîne binaire ne peut pas être vide.")
+
+    bit_de_signe = binaire[0]
+    bits_valeur = ''.join(binaire[1:])
+
+    valeur_absolue = int(bits_valeur, 2) if bits_valeur else 0
+
+    if bit_de_signe == '0':
+        return valeur_absolue
+    else:
+        return -valeur_absolue
+
+
+# Creation de la classe MantisseExposant
+
+class MantisseExposant(Codage):
+    """
+    Classe représentant un nombre en mantisse-exposant - hérite de la classe Codage.
+    """
+    def __init__(self):
         # Attributs definis a l'initialisation
-        self.reel = reel # valeur du nombre reel
-        self.precision = precision # nombre de chiffres significatifs dans la mantisse
+        self.reel = 0 # valeur du nombre reel
+        self.precision = 5 # nombre de chiffres significatifs dans la mantisse
 
         # Attributs non definis a l'initialisation
         self.mantisse = None # valeur de la mantisse sous forme decimale 
@@ -22,7 +53,7 @@ class MantisseExposant:
         self.mantisseBinaire = None # valeur de la mantisse en binaire (premier bit = signe)
         self.exposantBinaire = None # valeur de l'exposant en binaire (premier bit = signe)
 
-    def decode(self):
+    def code(self, reel):
         """
         Fonction qui prend en entrée un nombre réel et retourne sa représentation en mantisse-exposant.
         La mantisse et l'exposant sont représentés en binaire avec un bit de signe.
@@ -53,67 +84,75 @@ class MantisseExposant:
         if signe_negatif:
             self.mantisse = -self.mantisse
     
-        return self.mantisse, self.exposant
-    
+        return self.mantisse, self.exposant    
 
-    def decodeBinaire(self):
+    def codeBinaire(self, reel):
         """
         Fonction qui prend en un réel et utilise la méthode decode pour obtenir 
         une mantisse et un exposant et retourne leur valeur en binaire.
         """
+        # Initialisation de la valeur du reel
+        self.reel = reel
+
         # On decode d'abord la mantisse et l'exposant en decimal
-        self.mantisse, self.exposant = self.decode()
+        self.mantisse, self.exposant = self.code(self.reel)
 
         # On convertit la mantisse en binaire
-        # Gestion du bit de signe
-        bit_de_signe_mantisse = '0' if self.mantisse >= 0 else '1'
+        self.mantisseBinaire = entier_en_binaire(int(self.mantisse * (10 ** self.precision)))
 
-        # On convertit la partie absolue de la mantisse en binaire  
-        mantisse_absolue = abs(self.mantisse)
+        # On convertit l'exposant en binaire
+        # Calcule le signe
+        signe = 0 if self.exposant >= 0 else 1
 
-        # On convertir l'exposant en binaire
-        # Gestion du bit de signe
-        bit_de_signe_exposant = '0' if self.exposant >= 0 else '1'
-        
-        # On convertit la partie absolue de l'exposant en binaire
-        exposant_absolu = abs(self.exposant)
+        # Valeur absolue de l'exposant (limitée à 7 bits = de 0 à 127)
+        valeur = abs(self.exposant)
 
-        self.mantisseBinaire = self.mantisse
+        # Conversion en binaire sur 7 bits
+        valeur_binaire = format(valeur, '07b') 
 
-        return self.mantisseBinaire, self.exposantBinaire
+        # Ajout du bit de signe devant
+        self.exposantBinaire = str(signe) + valeur_binaire
+
+        res1 = [int(bit) for bit in self.mantisseBinaire]
+        res2 = [int(bit) for bit in self.exposantBinaire]
+        res = res1 + res2
+
+        return res
 
     def __str__(self):
         """
         Affichage de la mantisse et de l'exposant sous forme décimale.
         """
-        self.mantisse, self.exposant = self.decode() # on calcule la mantisse et l'exposant
+        self.mantisse, self.exposant = self.code(self.reel) # on calcule la mantisse et l'exposant
         return f"{self.mantisse} x 10^{self.exposant}"
     
     def afficherBinaire(self):
         """
         Affichage de la mantisse et de l'exposant sous forme binaire.
         """
-        self.mantisseBinaire, self.exposantBinaire = self.decodeBinaire() # on calcule la mantisse et l'exposant en binaire 
-        print(f"{self.mantisseBinaire} x 10^{self.exposantBinaire}")
+        coordonnees_binaires = self.codeBinaire(self.reel) # on calcule la mantisse et l'exposant en binaire 
+        print(coordonnees_binaires)
 
-    
-    
     @staticmethod
-    def code(value: float) -> 'MantisseExposant':
-        if value == 0:
-            return MantisseExposant(0, 0)
-        
-        exposant = 0
-        while abs(value) >= 10:
-            value /= 10
-            exposant += 1
-        while abs(value) < 1:
-            value *= 10
-            exposant -= 1
-        
-        return MantisseExposant(value, exposant)
+    def decode(coordonnees_binaires):
+        """
+        Fonction qui décode la mantisse et l'exposant pour retrouver le nombre réel.
+        """
+        exposant = ''.join(map(str,coordonnees_binaires[-8:])) # les 8 derniers bits sont l'exposant
+        mantisse = ''.join(map(str,coordonnees_binaires[:-8])) # le reste est la mantisse
+
+
+        # Decodage de l'exposant
+        exposant_decimal = binaire_en_entier(exposant)
+        mantisse_decimal = binaire_en_entier(mantisse)
+
+        print(f"{mantisse_decimal / (10 ** 5)} x 10^{exposant_decimal}")
+
     
 
 # Test de création 
-ME = MantisseExposant(0.1234567)
-ME.afficherBinaire()
+# ME = MantisseExposant()
+# print(ME)
+# coordonnees = ME.codeBinaire(12)
+# ME.afficherBinaire()
+# ME.decode(coordonnees)

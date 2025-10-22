@@ -1,3 +1,6 @@
-import numpy as np
-separateur  = np.sort(np.random.choice(range(1,10), 5, False))
-print(separateur)
+def f(x):
+    return x**2
+a = [1,2,3,4,5]
+y = map(f, a)
+print(y)
+print(list(y))

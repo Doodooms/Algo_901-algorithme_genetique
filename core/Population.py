@@ -1,4 +1,4 @@
-from Individu import Individu
+from core.Individu import Individu
 
 class Population:
     def __init__(self, liste_individus : list[Individu]):

@@ -1,11 +1,10 @@
-from Coordonnees import Coordonnees
+from core.Coordonnees import Coordonnees
 
 class Individu():
     def __init__(self, id : int, coordonnees : Coordonnees):
         self.id = id # Besoin d'un identifiant unique ???
         self.coordonnees = coordonnees
         self.elite = False # Pour s'amuser lol
-        self.codage 
 
     def __str__(self):
         return f"ID : {self.id}, coordonnées : {self.coordonnees}"

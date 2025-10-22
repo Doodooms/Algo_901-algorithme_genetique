@@ -58,7 +58,7 @@ class Selection_tournoi(Selection):
 
 
 class Selection_roulette(Selection):
-    def __init__(self, population: population, taille_selection: int):
+    def __init__(self, population: Population, taille_selection: int):
         super().__init__(population)
         self.taille_selection = taille_selection
 
@@ -102,7 +102,7 @@ class Selection_roulette(Selection):
     
 
 if __name__ == '__main__':
-    population = [individu(i,np.array([1, 0, 0, 1, 0, 1])) for i in range(10)]
+    population = [Individu(i,np.array([1, 0, 0, 1, 0, 1])) for i in range(10)]
 
     selection1 = Selection_tournoi(population, 5, 5).selection()
     selection2 = Selection_roulette(population, 5).selection()

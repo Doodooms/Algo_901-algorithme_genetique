@@ -1,6 +1,6 @@
 """
 Classe : Selection
-Description : Défini plusieurs méthodes de sélection pour obtenir un échantillon de la population 
+Description : Défini plusieurs méthodes de sélection pour obtenir un échantillon de la population ou appliquer une selection naturelle 
 """
 from core.Individu import Individu
 from core.Population import Population
@@ -27,7 +27,9 @@ class Selection_tournoi(Selection):
 
         if self.taille_selection > len(self.population.liste_individus):
             raise ValueError("La taille de la sélection dépasse la taille de la population disponible.")
-    
+        if self.taille_selection%2 == 1:
+            raise ValueError("La taille de la selection doit être paire")
+        
         selection = set()
         # Copie de la population pour éviter de modfiier la population originale
         copie_pop = self.population
@@ -66,6 +68,8 @@ class Selection_roulette(Selection):
 
         if self.taille_selection > len(self.population.liste_individus):
             raise ValueError("La taille de la sélection dépasse la taille de la population disponible.")
+        if self.taille_selection%2 == 1:
+            raise ValueError("La taille de la selection doit être paire")
     
         # Récupération des fitness pour chaque individu
         fitness_values = np.array([ind.fitness for ind in self.population.liste_individus]) 
@@ -99,6 +103,50 @@ class Selection_roulette(Selection):
             selection.add(individu_selectionne)
 
         return selection
+    
+class Selection_naturelle(Selection):
+
+    def __init__(self, population: Population, nb_individu_a_supprimer: int):
+        super().__init__(population)
+        self.delete = nb_individu_a_supprimer
+    
+    def selection(self):
+
+        if self.delete > len(self.population.liste_individus):
+            raise ValueError("Le nombre d'individu à supprimer est supérieur à la taille de la population.")
+        
+        # Tri des individus par fitness croissante
+        individus_tries = sorted(self.population.liste_individus, key=lambda ind: ind.fitness)
+
+        # Sélection des plus faibles
+        individus_a_supprimer = individus_tries[:self.delete]
+
+        # Suppression
+        self.population.retirer(individus_a_supprimer)
+
+class Selection_Crossover(Selection):
+
+    def __init__(self, population: Population, parent1: Individu, parent2: Individu, enfant1: Individu, enfant2: Individu):
+        super().__init__(population)
+        self.parent1 = parent1
+        self.parent2 = parent2
+        self.enfant1 = enfant1
+        self.enfant2 = enfant2
+    
+    def selection(self):
+        # Regrouper les 4 individus
+        candidats = [self.parent1, self.parent2, self.enfant1, self.enfant2]
+
+        # Trier par fitness décroissante
+        meilleurs = sorted(candidats, key=lambda ind: ind.fitness, reverse=True)[:2]
+
+        # Ajoute des enfants à la population
+        self.population.ajouter(self.enfant1)
+        self.population.ajouter(self.enfant2)
+
+        # Retirer les individus avec les moins bons fitness
+        ind_a_supprimer = [ind for ind in candidats if ind not in meilleurs]
+        self.population.retirer(ind_a_supprimer)
     
 
 if __name__ == '__main__':

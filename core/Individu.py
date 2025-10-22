@@ -1,17 +1,18 @@
-from Coordonnees import coordonnees
+from Coordonnees import Coordonnees
 
-class individu():
-    def __init__(self, id : int, coordonnees : coordonnees):
+class Individu():
+    def __init__(self, id : int, coordonnees : Coordonnees):
         self.id = id # Besoin d'un identifiant unique ???
         self.coordonnees = coordonnees
         self.elite = False # Pour s'amuser lol
+        self.codage 
 
     def __str__(self):
         return f"ID : {self.id}, coordonnées : {self.coordonnees}"
     
 if __name__ == "__main__":
     import numpy as np
-    c = coordonnees(np.array([1,2,3]))
+    c = Coordonnees(np.array([1,2,3]))
     c.coordonnees_codees = np.array([1, 0, 0, 1, 0, 1])
-    ind = individu(1, c)
+    ind = Individu(1, c)
     print(ind)

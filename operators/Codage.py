@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from core.Coordonnees import coordonnees
+from core.Coordonnees import Coordonnees
 
 
 class Codage(ABC):
@@ -7,7 +7,7 @@ class Codage(ABC):
         pass
 
     @abstractmethod
-    def code(self, coord: coordonnees):
+    def code(self, coord: Coordonnees):
         """
         Fonction qui prends les coordonnées réelles et les encode pour pouvoir faire les autres opérations de l'algo génétique
         """

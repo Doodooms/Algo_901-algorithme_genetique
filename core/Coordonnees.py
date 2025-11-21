@@ -1,9 +1,9 @@
 import numpy as np
 
 class Coordonnees:
-    def __init__(self, coordonnees: np.array):
+    def __init__(self, coordonnees: np.ndarray,coordonees_codees :np.ndarray = np.array([])):
         self.coordonnees = coordonnees
-        self.coordonnees_codees = None
+        self.coordonnees_codees = coordonees_codees
 
     def __str__(self):
         return f"Coordonnées : {self.coordonnees}, Coordonnées codées : {self.coordonnees_codees}"

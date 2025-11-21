@@ -26,7 +26,7 @@ class AlgorithmeGenetique:
         fitness_function, # Ajout : la fonction de fitness
         maximize_fitness: bool = True, # Ajout : indique si on maximise ou minimise
         taux_mutation: float = 0.01, # Ajout : taux de mutation (peut être aussi dans mutation_operator)
-        selection_params: dict = None, # Ajout : paramètres spécifiques pour la sélection (e.g., taille_tournoi)
+        selection_params: dict = {}, # Ajout : paramètres spécifiques pour la sélection (e.g., taille_tournoi)
         taux_crossover: float = 0.8, # Ajout : probabilité qu'un crossover ait lieu
         num_generations: int = 100 # Ajout : nombre de générations à exécuter
     ):

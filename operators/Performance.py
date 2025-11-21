@@ -3,7 +3,7 @@ class Performance:
     def __init__(self, fitness_function):
         self.fitness_function = fitness_function
 
-    def evaluer(self, individu : Individu) -> None:
+    def evaluer(self, individu : Individu) -> float:
         """
         Évalue un individu en utilisant la fonction de fitness fournie
         et met à jour son score de performance."""

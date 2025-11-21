@@ -1,10 +1,11 @@
 from core.Coordonnees import Coordonnees
 
 class Individu():
-    def __init__(self, id : int, coordonnees : Coordonnees):
-        self.id = id # Besoin d'un identifiant unique ???
+    def __init__(self, id : int, coordonnees : Coordonnees, fitness = None):
+        self.id = id 
         self.coordonnees = coordonnees
-        self.elite = False # Pour s'amuser lol
+        self.elite = False 
+        self.fitness = fitness
 
     def __str__(self):
         return f"ID : {self.id}, coordonnées : {self.coordonnees}"

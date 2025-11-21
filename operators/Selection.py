@@ -2,11 +2,15 @@
 Classe : Selection
 Description : Défini plusieurs méthodes de sélection pour obtenir un échantillon de la population 
 """
+from core.Coordonnees import Coordonnees
 from core.Individu import Individu
 from core.Population import Population
+from operators.Performance import Performance
 from abc import ABC, abstractmethod
 import numpy as np
 import random
+
+
 
 class Selection(ABC):
     def __init__(self, population: Population):
@@ -30,14 +34,14 @@ class Selection_tournoi(Selection):
     
         selection = set()
         # Copie de la population pour éviter de modfiier la population originale
-        copie_pop = self.population
+        copie_pop = Population(self.population.liste_individus.copy())
 
         # Réalisation de tournois jusqu'à avoir le nombre d'individus selectionnés souhaité
         while len(selection) < self.taille_selection:
 
-            if len(copie_pop) < self.taille_tournoi:
+            if len(copie_pop.liste_individus) < self.taille_tournoi:
                 print(f"Il n'y a pas assez d'individu pour faire un tournois de taille {self.taille_tournoi}.")
-                print(f"On réalise le tournois sur les {len(copie_pop)} individus restants.")
+                print(f"On réalise le tournois sur les {len(copie_pop.liste_individus)} individus restants.")
                 participants = copie_pop.liste_individus
 
             else:
@@ -51,11 +55,9 @@ class Selection_tournoi(Selection):
             selection.add(participants[0])
             
             # Suppression du meilleur individu dans la copie de la population
-            copie_pop.remove(participants[0])
+            copie_pop.retirer(participants[0])
     
         return selection
-
-
 
 class Selection_roulette(Selection):
     def __init__(self, population: Population, taille_selection: int):
@@ -100,11 +102,59 @@ class Selection_roulette(Selection):
 
         return selection
     
+class Selection_naturelle(Selection):
 
+    def __init__(self, population: Population, nb_individu_a_supprimer: int):
+        super().__init__(population)
+        self.delete = nb_individu_a_supprimer
+    
+    def selection(self):
+
+        if self.delete > len(self.population.liste_individus):
+            raise ValueError("Le nombre d'individu à supprimer est supérieur à la taille de la population.")
+        
+        # Tri des individus par fitness croissante
+        individus_tries = sorted(self.population.liste_individus, key=lambda ind: ind.fitness)
+
+        # Sélection des plus faibles
+        individus_a_supprimer = individus_tries[:self.delete]
+
+        # Suppression
+        self.population.retirer(individus_a_supprimer)
+
+class Selection_Crossover(Selection):
+
+    def __init__(self, population: Population, parent1: Individu, parent2: Individu, enfant1: Individu, enfant2: Individu):
+        super().__init__(population)
+        self.parent1 = parent1
+        self.parent2 = parent2
+        self.enfant1 = enfant1
+        self.enfant2 = enfant2
+    
+    def selection(self):
+        # Regrouper les 4 individus
+        candidats = [self.parent1, self.parent2, self.enfant1, self.enfant2]
+
+        # Trier par fitness décroissante
+        meilleurs = sorted(candidats, key=lambda ind: ind.fitness, reverse=True)[:2]
+
+        # Ajoute des enfants à la population
+        self.population.ajouter(self.enfant1)
+        self.population.ajouter(self.enfant2)
+
+        # Retirer les individus avec les moins bons fitness
+        ind_a_supprimer = [ind for ind in candidats if ind not in meilleurs]
+        self.population.retirer(ind_a_supprimer)
+        
 if __name__ == '__main__':
-    population = [Individu(i,np.array([1, 0, 0, 1, 0, 1])) for i in range(10)]
-
-    selection1 = Selection_tournoi(population, 5, 5).selection()
+    
+    population = Population([Individu(i,Coordonnees(np.array([1, 0, 0, 1, 0, 1]))) for i in range(10)])
+    def carre(x):
+        return np.sum(x**2)
+    perf=Performance(carre)
+    for indiv in population.liste_individus:
+        indiv.fitness=perf.evaluer(indiv)
+    selection1 = Selection_tournoi(population, 5, 6).selection()
     selection2 = Selection_roulette(population, 5).selection()
 
     print(selection1)

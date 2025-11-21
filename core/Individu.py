@@ -1,7 +1,7 @@
 from core.Coordonnees import Coordonnees
 
 class Individu():
-    def __init__(self, id : int, coordonnees : Coordonnees, fitness = None):
+    def __init__(self, id : int = None, coordonnees : Coordonnees = Coordonnees(), fitness = None):
         self.id = id 
         self.coordonnees = coordonnees
         self.elite = False 

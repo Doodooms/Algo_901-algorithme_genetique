@@ -1,7 +1,7 @@
 from core.Individu import Individu
 
 class Population:
-    def __init__(self, liste_individus : list[Individu]):
+    def __init__(self, liste_individus : list[Individu] = [Individu()]):
         self.liste_individus = liste_individus if isinstance(liste_individus, list) else [liste_individus]
 
     def __str__(self):

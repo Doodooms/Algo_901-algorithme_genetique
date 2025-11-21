@@ -9,6 +9,7 @@ from core.Coordonnees import Coordonnees
 from operators.Performance import Performance # Importer Performance (ou la fonction de fitness directement si elle n'est pas encapsulée)
 import numpy as np 
 import random 
+
 class AlgorithmeGenetique:
     """
     Classe principale de l'algorithme génétique
@@ -50,7 +51,7 @@ class AlgorithmeGenetique:
         
         # Initialisation de l'opérateur de sélection (nécessite la population après initialisation)
         self.selection_operator_type = selection_operator_type
-        self.selection_params = selection_params if selection_params is not None else {}
+        self.selection_params = selection_params if selection_params is not None else None
         self.selection_operator = None # Sera initialisé plus tard
 
         # Historique (pour le suivi de la convergence)
@@ -83,8 +84,14 @@ class AlgorithmeGenetique:
             liste_individus.append(individu)
         
         self.population = Population(liste_individus)
+
+        # Evaluation de la population
+        self._evaluer_population()
+        
         # Après avoir initialisé la population, initialiser l'opérateur de sélection
-        # self.selection_operator = self.selection_operator_type(self.population, **self.selection_params)
+        self.selection_operator = self.selection_operator_type
+        self.selection_operator.population = self.population
+
     def _evaluer_population(self):
         """
         Évalue la performance (fitness) de chaque individu dans la population.
@@ -102,11 +109,12 @@ class AlgorithmeGenetique:
                 individu.fitness *= -1 # Transformer la minimisation en maximisation
 
 
-    def _selectionner_parents(self) -> list[Individu]:
+    def _selectionner_parents(self, num_parents_needed = None) -> list[Individu]:
         """
         Sélectionne les parents pour la reproduction en utilisant l'opérateur de sélection.
         Retourne une liste d'individus sélectionnés.
         """
+        
         # La sélection doit retourner un nombre de parents suffisant pour la reproduction
         # Par exemple, pour générer une nouvelle population de self.population_size individus,
         # il faudra self.population_size / 2 paires de parents.
@@ -115,24 +123,28 @@ class AlgorithmeGenetique:
         # la méthode selection() des classes de sélection retourne un `set`.
         # Il faut convertir en liste et s'assurer qu'il y a assez de parents pour les crossovers.
         
-        # Exemple pour un nombre pair de parents pour le crossover
-        num_parents_needed = self.population_size # ou self.population_size / 2 * 2 si on veut générer toute la nouvelle génération via crossover
+        # Initialisation par défault du nombre de parent (pour obtenir une population de même taille après le crossover)
+        if num_parents_needed == None:
+            num_parents_needed = np.floor(self.population_size/2) 
         
-        # Il faudra adapter la taille_selection des opérateurs de sélection
-        # ou les appeler plusieurs fois
-        
+        # Vérification que le nombre de parents est paire
+        if num_parents_needed%2 == 1:
+            if num_parents_needed != 1:
+                num_parents_needed -= 1
+            else:
+                num_parents_needed += 1
         
         # Il faudra probablement modifier l'interface de Selection pour qu'elle prenne 'self.population'
         # comme argument ou soit mise à jour avec la dernière population.
         
-        # Mise à jour de l'opérateur de sélection avec la population actuelle
-        self.selection_operator.population = self.population
         
         # self.selection_params contient la bonne 'taille_selection'
         # pour obtenir le nombre de parents souhaité.
         
-        
-        selected_parents = list(self.selection_operator.selection())
+        if self.selection_params is not None:
+            selected_parents = list(self.selection_operator.selection(num_parents_needed, self.selection_params)) 
+        else:
+            selected_parents = list(self.selection_operator.selection(num_parents_needed))
         
         # Si le nombre de parents sélectionnés est inférieur à ce dont nous avons besoin pour la prochaine génération,
         # il faut soit rappeler la sélection, soit adapter la stratégie de reproduction.
@@ -233,7 +245,8 @@ if __name__ == "__main__":
     crossover = SimpleCrossover()
     mutation = Mutation(0.05) # Remplacer par une implémentation concrète
     codage = MantisseExposant()
-    tournoi = Selection_tournoi(None, taille_tournoi=3, taille_selection=5) # Population sera définie plus tard
+    tournoi = Selection_tournoi(Population()) # Population sera définie plus tard
+    tournoi_params = 5
 
     # Créer une instance de l'algorithme génétique
     ag = AlgorithmeGenetique(
@@ -247,7 +260,7 @@ if __name__ == "__main__":
         fitness_function=exemple_fitness_function,
         maximize_fitness=True,
         taux_mutation=0.05,
-        selection_params={'taille_tournoi': 5},
+        selection_params=tournoi_params,
         taux_crossover=0.7,
         num_generations=100
     )

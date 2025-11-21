@@ -26,7 +26,7 @@ class Selection_tournoi(Selection):
     def __init__(self, population: Population):
         super().__init__(population)
 
-    def selection(self, taille_tournoi: int, taille_selection: int):
+    def selection(self, taille_selection: int, taille_tournoi: int):
 
         if taille_selection > len(self.population.liste_individus):
             raise ValueError("La taille de la sélection dépasse la taille de la population disponible.")
@@ -161,7 +161,7 @@ if __name__ == '__main__':
     print("=== Population ===")
     print(population)
 
-    selection1 = Selection_tournoi(population).selection(5, 6)
+    selection1 = Selection_tournoi(population).selection(6, 5)
     selection2 = Selection_roulette(population).selection(6)
     selection3 = Selection_Crossover(population).selection(population.liste_individus[0], population.liste_individus[1], 
                                                            population.liste_individus[2], population.liste_individus[3])

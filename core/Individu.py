@@ -8,7 +8,7 @@ class Individu():
         self.fitness = fitness
 
     def __str__(self):
-        return f"ID : {self.id}, coordonnées : {self.coordonnees}"
+        return f"ID : {self.id}, coordonnées : {self.coordonnees}, fitness : {self.fitness}"
     
 if __name__ == "__main__":
     import numpy as np

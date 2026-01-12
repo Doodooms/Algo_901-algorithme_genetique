@@ -210,64 +210,38 @@ class AlgorithmeGenetique:
 
     def _remplacer_population(self, nouvelle_generation: list[Individu]):
         """
-        Remplace l'ancienne population par la nouvelle génération.
-        Implémente ici la stratégie de remplacement (e.g., Elitisme + nouvelle_generation).
+        Remplace l'ancienne population par la nouvelle génération en appliquant l'élitisme.
+        L'élitisme assure que le meilleur individu découvert ne soit pas perdu d'une génération à l'autre.
         """
-        # Stratégie d'élitisme : garder les meilleurs individus de l'ancienne population
-        # et les ajouter à la nouvelle génération avant de la tronquer si nécessaire.
-        
-        # On suppose que les individus ont déjà leur fitness calculée.
+        # 1. Identifier l'élite de la population ACTUELLE (avant remplacement)
+        # On trie par fitness (le meilleur en premier selon maximize_fitness)
         self.population.liste_individus.sort(key=lambda ind: ind.fitness, reverse=self.maximize_fitness)
-        
-        # Garder le meilleur individu (l'élite)
-        elite_individu = self.population.liste_individus[0]
-        
-        # Créer la nouvelle population en combinant l'élite et la nouvelle génération
-        #  si l'élite est déjà dans la nouvelle_generation, il ne faut pas le dupliquer.
-        # on remplace juste la population par la nouvelle génération.
-        
-        # Pour l'instant, on remplace simplement
+        elite_precedente = self.population.liste_individus[0]
+
+        # 2. Installer la nouvelle génération
         self.population = Population(nouvelle_generation)
+
+        # 3. Évaluer la fitness des individus de la nouvelle génération
+        self._evaluer_population()
+
+        # 4. Appliquer l'élitisme
+        # On trie la nouvelle population pour identifier le pire individu
+        self.population.liste_individus.sort(key=lambda ind: ind.fitness, reverse=self.maximize_fitness)
+        meilleur_actuel = self.population.liste_individus[0]
         
-        # il faut que l'élite soit dans la nouvelle population s'il y a de l'élitisme.
-        # Par exemple:
-        # if elite_individu not in self.population.liste_individus:
-        #    self.population.retirer(self.population.liste_individus[-1]) # retirer le pire si nouvelle_generation est pleine
-        #    self.population.ajouter(elite_individu)
-    
-if __name__ == "__main__":
-    # Exemple d'utilisation de la classe AlgorithmeGenetique
-    def exemple_fitness_function(coordonnees: np.ndarray) -> float:
-        return -np.sum(coordonnees**2) + 10
+        # Si l'ancienne élite était meilleure que tout ce qu'on a produit maintenant :
+        if self.maximize_fitness:
+            est_meilleure = elite_precedente.fitness > meilleur_actuel.fitness
+        else:
+            # Si on minimise (et que la fitness n'a pas été inversée), le plus petit est le meilleur
+            est_meilleure = elite_precedente.fitness < meilleur_actuel.fitness
 
-    # Initialiser les opérateurs (exemples simples)
-    #codage = Codage() # Remplacer par une implémentation concrète
-    crossover = SimpleCrossover()
-    mutation = Mutation(0.05) # Remplacer par une implémentation concrète
-    codage = MantisseExposant()
-    tournoi = Selection_tournoi(Population()) # Population sera définie plus tard
-    tournoi_params = 5
+        if est_meilleure:
+            # On remplace le moins bon individu de la nouvelle génération par l'ancienne élite
+            self.population.liste_individus[-1] = elite_precedente
+            # On re-trie pour maintenir l'ordre si nécessaire
+            self.population.liste_individus.sort(key=lambda ind: ind.fitness, reverse=self.maximize_fitness)
 
-    # Créer une instance de l'algorithme génétique
-    ag = AlgorithmeGenetique(
-        population_size=50,
-        dimension=2,
-        bounds=[(-5, 5), (-5, 5)],
-        codage_operator=codage,
-        crossover_operator=crossover,
-        mutation_operator=mutation,
-        selection_operator_type=tournoi,
-        fitness_function=exemple_fitness_function,
-        maximize_fitness=True,
-        taux_mutation=0.05,
-        selection_params=tournoi_params,
-        taux_crossover=0.7,
-        num_generations=100
-    )
-
-    # Initialiser la population
-    ag._initialiser_population()
-    print(ag.population)
-    ag._selectionner_parents()
-    ag._reproduire()
-    ag._
+        # 5. Mise à jour de l'opérateur de sélection
+        # Indispensable pour que la prochaine sélection travaille sur les nouveaux individus
+        self.selection_operator.population = self.population

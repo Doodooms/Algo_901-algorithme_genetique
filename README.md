@@ -13,6 +13,20 @@ HERAUX Clémence
 
 ## Structure du projet
 
+Algo_901-algorithme_genetique/
+│
+├── core/
+│   ├── AlgorithmeGenetique.py
+│   ├── Coordonnees.py
+│   ├── Individu.py
+│   └── Population.py
+│
+└── operators/
+    ├── Codage.py
+    ├── Crossover.py
+    ├── Mutation.py
+    ├── Selection.py
+    └── MantisseExposant.py
 
 ## Description des dossiers
 ### `core/` - Composants centraux

@@ -1,9 +1,9 @@
-M2 MMAA
-PELHATRE Thomas
-BLANQUET Faosto
-LUAYU Israel
-MAILHEBIAU Phoebus
-HERAUX Clémence
+M2 MMAA  
+PELHATRE Thomas  
+BLANQUET Faosto   
+LUAYU Israel  
+MAILHEBIAU Phoebus  
+HERAUX Clémence   
 ------
 # <center> Algo_901-algorithme_genetique </center>
 <center> <i>Ce projet propose une implémentation <b>orientée objet</b> d’un algorithme génétique. Il permet de gérer une population d'individus, d'appliquer des opéarteurs génétiques et de simuler une évolution sur plusieurs générations. </i></center>

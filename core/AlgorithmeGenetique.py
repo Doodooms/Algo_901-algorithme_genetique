@@ -22,7 +22,7 @@ class AlgorithmeGenetique:
         codage_operator : MantisseExposant, # Remplacement de 'codage' par 'codage_operator' pour la clarté
         crossover_operator: Crossover, # Remplacement de 'crossover' par 'crossover_operator'
         mutation_operator: Mutation, # Remplacement de 'mutation' par 'mutation_operator'
-        selection_operator_type: Selection, # Ajout : type de la classe de sélection (e.g., Selection_tournoi)
+        selection_operator : Selection, # Ajout : type de la classe de sélection (e.g., Selection_tournoi)
         fitness_function, # Ajout : la fonction de fitness
         maximize_fitness: bool = True, # Ajout : indique si on maximise ou minimise
         taux_mutation: float = 0.01, # Ajout : taux de mutation (peut être aussi dans mutation_operator)
@@ -49,9 +49,9 @@ class AlgorithmeGenetique:
         self.population = Population([]) 
         
         # Initialisation de l'opérateur de sélection (nécessite la population après initialisation)
-        self.selection_operator_type = selection_operator_type
+        self.selection_operator = selection_operator
         self.selection_params = selection_params if selection_params is not None else {}
-        self.selection_operator = None # Sera initialisé plus tard
+        
 
         # Historique (pour le suivi de la convergence)
         self.history = {'best_fitness': [], 'avg_fitness': [], 'best_individu': []}
@@ -83,6 +83,7 @@ class AlgorithmeGenetique:
             liste_individus.append(individu)
         
         self.population = Population(liste_individus)
+        self.selection_operator.population = self.population
         # Après avoir initialisé la population, initialiser l'opérateur de sélection
         # self.selection_operator = self.selection_operator_type(self.population, **self.selection_params)
     def _evaluer_population(self):
@@ -96,6 +97,9 @@ class AlgorithmeGenetique:
             # On utilise la classe Performance pour évaluer l'individu
             perf = Performance(self.fitness_function)
             individu.fitness = perf.evaluer(individu) # Ajouter un attribut fitness à l'individu
+
+            if individu.fitness is None:
+                raise ValueError(f"Fitness None pour l'individu {individu.id}. Vérifie Performance.evaluer().")
 
             # Ajuster le score si on minimise (les opérateurs de sélection tendent à maximiser)
             if not self.maximize_fitness:
@@ -173,8 +177,8 @@ class AlgorithmeGenetique:
                 enfant1, enfant2 = self.crossover_operator.crossover(parent1, parent2)
                 
             # Appliquer la mutation aux enfants (même s'ils sont identiques aux parents si pas de crossover)
-            self.mutation_operator.mutation(enfant1) # La mutation doit modifier individu.coordonnees.coordonnees_codees
-            self.mutation_operator.mutation(enfant2)
+            self.mutation_operator.mutation1(enfant1) # La mutation doit modifier individu.coordonnees.coordonnees_codees
+            self.mutation_operator.mutation1(enfant2)
             
             nouvelle_generation.append(enfant1)
             nouvelle_generation.append(enfant2)
@@ -243,7 +247,7 @@ if __name__ == "__main__":
         codage_operator=codage,
         crossover_operator=crossover,
         mutation_operator=mutation,
-        selection_operator_type=tournoi,
+        selection_operator=tournoi,
         fitness_function=exemple_fitness_function,
         maximize_fitness=True,
         taux_mutation=0.05,
@@ -254,7 +258,9 @@ if __name__ == "__main__":
 
     # Initialiser la population
     ag._initialiser_population()
+    ag._evaluer_population()
+    for ind in ag.population.liste_individus[:5]:
+        print(ind.id, ind.fitness, type(ind.fitness))
     print(ag.population)
-    ag._selectionner_parents()
-    ag._reproduire()
-    ag._
+    parents = ag._selectionner_parents()
+    nouvelle_generation = ag._reproduire(parents)

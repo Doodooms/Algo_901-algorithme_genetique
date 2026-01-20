@@ -1,17 +1,15 @@
 from operators.Codage import Codage
 
-def entier_en_binaire(n):
+def entier_en_binaire(n, nb_bits):
     """
     Fonction qui convertit un entier en binaire avec un bit de signe.
     Le premier bit indique le signe (0 pour positif, 1 pour négatif).
     Les bits suivants représentent la valeur absolue de l'entier en binaire.
     """
-    if n == 0:
-        return '0'  # Representation binaire de 0
 
     bit_de_signe = '0' if n >= 0 else '1'
     valeur_absolue = abs(n)
-    bits_valeur = bin(valeur_absolue)[2:]  # Conversion en binaire sans le préfixe '0b'
+    bits_valeur = format(valeur_absolue, f'0{nb_bits}b')  # Conversion en binaire sans le préfixe '0b'
 
     return bit_de_signe + bits_valeur
 
@@ -98,7 +96,7 @@ class MantisseExposant(Codage):
         self.mantisse, self.exposant = self.code()
 
         # On convertit la mantisse en binaire
-        self.mantisseBinaire = entier_en_binaire(int(self.mantisse * (10 ** self.precision)))
+        self.mantisseBinaire = entier_en_binaire(int(self.mantisse * (10 ** self.precision)), nb_bits = 20)
 
         # On convertit l'exposant en binaire
         # Calcule le signe
@@ -123,7 +121,7 @@ class MantisseExposant(Codage):
         """
         Affichage de la mantisse et de l'exposant sous forme décimale.
         """
-        self.mantisse, self.exposant = self.code(self.reel) # on calcule la mantisse et l'exposant
+        self.mantisse, self.exposant = self.code() # on calcule la mantisse et l'exposant
         return f"{self.mantisse} x 10^{self.exposant}"
     
     def afficherBinaire(self):
@@ -151,8 +149,21 @@ class MantisseExposant(Codage):
     
 
 # Test de création 
-# ME = MantisseExposant()
-# print(ME)
-# coordonnees = ME.codeBinaire(12)
-# ME.afficherBinaire()
-# ME.decode(coordonnees)
+ME = MantisseExposant()
+ME2 = MantisseExposant()
+
+print("ME", ME)
+print("")
+
+coordonnees = ME.codeBinaire(12)
+coordonnees2 = ME2.codeBinaire(-2251.3)
+
+print("Coordonnees 1 : ")
+ME.afficherBinaire()
+ME.decode(coordonnees)
+print("")
+
+print("Coordonnees 2 : ")
+ME2.afficherBinaire()
+ME2.decode(coordonnees2)
+print("")

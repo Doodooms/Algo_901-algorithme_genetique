@@ -30,14 +30,14 @@ Algo_901-algorithme_genetique/
 
   
 ## Description des dossiers
-### `core/` - Opérateurs génétiques
+### `core/` - Composants centraux
 
 - **AlgorithmeGenetique.py** : Point d'entrée du porjet, centralise toutes les classes et fournit un exemple d'éxécution de l'algorithme.
 - **Coordonnees.py** : Gestion des coordonnées des individus (ADN)
 - **Individu.py** : Définition d'un individus et propriétés associées (fitness, ...)
 - **Population.py** : Gestion d'une population sous forme de liste d'individus. 
 
-### `operators/` - Composants centraux
+### `operators/` - Opérateurs génétiques
 
 - **Codage.py** : Permet de coder les coordonnées d'un individu.
 - **Crossover.py** : Permet de croiser l'ADN des individus.

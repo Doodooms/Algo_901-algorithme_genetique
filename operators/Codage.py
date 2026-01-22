@@ -17,7 +17,7 @@ class Codage(ABC):
 class CodageBinaire(Codage):
     def code(self, coord: Coordonnees):
         # Exemple simple
-        return [bin(int(v)) for v in coord.valeurs]
+        coord.coordonnees_codees =  np.array([bin(int(v)) for v in coord.valeurs])
 
 
 class CodageReel(Codage):
@@ -25,14 +25,17 @@ class CodageReel(Codage):
         """ "
         Transforme chaque élément de la liste en float
         """
-        return coord.valeurs.astype(float)
+        coord.coordonnees_codees = coord.valeurs.astype(float)
 
 if __name__ == "__main__":
     x = np.array([1, 2.5, 3, 4.7])
     coord = Coordonnees(x)
 
-    codagereel = CodageReel()
-    codagebinaire = CodageBinaire()
+    codage_reel = CodageReel()
+    codage_binaire = CodageBinaire()
 
-    print(codagereel.code(coord))
-    print(codagebinaire.code(coord))
+    codage_reel.code(coord)
+    print(coord)
+    
+    codage_binaire.code(coord)
+    print(coord)

@@ -23,7 +23,7 @@ class AlgorithmeGenetique:
         crossover_operator: Crossover, # Remplacement de 'crossover' par 'crossover_operator'
         mutation_operator: Mutation, # Remplacement de 'mutation' par 'mutation_operator'
         selection_operator : Selection, # Ajout : type de la classe de sélection (e.g., Selection_tournoi)
-        fitness_function, # Ajout : la fonction de fitness
+        fitness_function : Performance, # Ajout : la fonction de fitness
         maximize_fitness: bool = True, # Ajout : indique si on maximise ou minimise
         taux_mutation: float = 0.01, # Ajout : taux de mutation (peut être aussi dans mutation_operator)
         selection_params: dict = {}, # Ajout : paramètres spécifiques pour la sélection (e.g., taille_tournoi)
@@ -81,6 +81,8 @@ class AlgorithmeGenetique:
         self.selection_operator.population = self.population
         # Après avoir initialisé la population, initialiser l'opérateur de sélection
         # self.selection_operator = self.selection_operator_type(self.population, **self.selection_params)
+
+    
     def _evaluer_population(self):
         """
         Évalue la performance (fitness) de chaque individu dans la population.
@@ -90,8 +92,7 @@ class AlgorithmeGenetique:
             # (Si le codage est binaire, vbesoin d'une étape de décodage ici)
             
             # On utilise la classe Performance pour évaluer l'individu
-            perf = Performance(self.fitness_function)
-            individu.fitness = perf.evaluer(individu) # Ajouter un attribut fitness à l'individu
+            individu.fitness = self.fitness_function.evaluer(individu)
 
             if individu.fitness is None:
                 raise ValueError(f"Fitness None pour l'individu {individu.id}. Vérifie Performance.evaluer().")
@@ -233,6 +234,7 @@ if __name__ == "__main__":
     mutation = Mutation(0.05) # Remplacer par une implémentation concrète
     codage = MantisseExposant()
     tournoi = Selection_tournoi(None, taille_tournoi=3, taille_selection=5) # Population sera définie plus tard
+    fitness = Performance(exemple_fitness_function)
 
     # Créer une instance de l'algorithme génétique
     ag = AlgorithmeGenetique(
@@ -243,7 +245,7 @@ if __name__ == "__main__":
         crossover_operator=crossover,
         mutation_operator=mutation,
         selection_operator=tournoi,
-        fitness_function=exemple_fitness_function,
+        fitness_function=fitness,
         maximize_fitness=True,
         taux_mutation=0.05,
         selection_params={'taille_tournoi': 5},

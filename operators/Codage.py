@@ -13,15 +13,15 @@ class Codage(ABC):
         """
 
 
-class codage_binaire:
-    def codage(self, variables):
+class CodageBinaire:
+    def code(self, variables):
         # codage binaire pour chaque élément
         # A IMPLEMENTER
         pass
 
 
-class codage_reel:
-    def codage(self, variables):
+class CodageReel:
+    def code(self, variables):
         """ "
         Transforme chaque élément de la liste en float
         """
@@ -31,7 +31,7 @@ class codage_reel:
 
 if __name__ == "__main__":
     x = [1, 2.5, 3, 4.7]
-    codagereel = codage_reel()
-    codagebinaire = codage_binaire()
-    print(codagereel.codage(x))
-    print(codagebinaire.codage(x))
+    codagereel = CodageReel()
+    codagebinaire = CodageBinaire()
+    print(codagereel.code(x))
+    print(codagebinaire.code(x))

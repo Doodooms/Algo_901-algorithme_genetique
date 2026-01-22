@@ -72,15 +72,10 @@ class AlgorithmeGenetique:
             
             coords_obj = Coordonnees(coordonnees_reelles)
             # Appliquer le codage défini
-            coords_obj.coordonnees_codees=map(lambda x: self.codage_operator.codeBinaire(x), coords_obj.coordonnees)
-            coords_obj.coordonnees_codees = list(coords_obj.coordonnees_codees)
-
-            self.codage_operator # Le résultat est stocké dans coords_obj.coordonnees_codees
+            self.codage_operator.code(coords_obj)
             
             individu = Individu(id=i, coordonnees=coords_obj)
-            individu.coordonnees.coordonnees_codees = coords_obj.coordonnees_codees
-            
-            liste_individus.append(individu)
+            individus.append(individu)
         
         self.population = Population(liste_individus)
         self.selection_operator.population = self.population

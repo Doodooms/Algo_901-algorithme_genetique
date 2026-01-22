@@ -3,7 +3,7 @@ import numpy as np
 class Coordonnees:
     def __init__(self, coordonnees: np.ndarray,coordonnees_codees :np.ndarray | None = None):
         self.coordonnees = coordonnees
-        self.coordonnees_codees = coordonees_codees
+        self.coordonnees_codees = coordonnees_codees
 
     def __str__(self):
         return f"Coordonnées : {self.coordonnees}, Coordonnées codées : {self.coordonnees_codees}"

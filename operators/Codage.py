@@ -11,27 +11,28 @@ class Codage(ABC):
         """
         Fonction qui prends les coordonnées réelles et les encode pour pouvoir faire les autres opérations de l'algo génétique
         """
-
-
-class CodageBinaire:
-    def code(self, variables):
-        # codage binaire pour chaque élément
-        # A IMPLEMENTER
         pass
 
 
-class CodageReel:
-    def code(self, variables):
+class CodageBinaire(Codage):
+    def code(self, coord: Coordonnees):
+        # Exemple simple
+        return [bin(int(v)) for v in coord.valeurs]
+
+
+class CodageReel(Codage):
+    def code(self, coord: Coordonnees):
         """ "
         Transforme chaque élément de la liste en float
         """
-        variables = [float(variables[i]) for i in range(len(variables))]
-        return variables
-
+        return coord.valeurs.astype(float)
 
 if __name__ == "__main__":
-    x = [1, 2.5, 3, 4.7]
+    x = np.array([1, 2.5, 3, 4.7])
+    coord = Coordonnees(x)
+
     codagereel = CodageReel()
     codagebinaire = CodageBinaire()
-    print(codagereel.code(x))
-    print(codagebinaire.code(x))
+
+    print(codagereel.code(coord))
+    print(codagebinaire.code(coord))

@@ -12,6 +12,12 @@ class Codage(ABC):
         Fonction qui prends les coordonnées réelles et les encode pour pouvoir faire les autres opérations de l'algo génétique
         """
 
+    @abstractmethod
+    def decode(self, coord_codees):
+        """
+        Fonction qui décode des coordonnées codées
+        """
+
 
 class codage_binaire:
     def codage(self, variables):

@@ -97,5 +97,5 @@ for t in range(
 print(ag.history)
 
 # On vérifie la convergence 
-print(f"Le résultat est attendu est 10 est le résultat de l'algo est : {ag.history['best_fitness'][-1]}")
+print(f"Le résultat attendu est 10 et le résultat de l'algo est : {ag.history['best_fitness'][-1]}")
 ```

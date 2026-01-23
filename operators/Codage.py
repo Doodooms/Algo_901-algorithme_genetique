@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from core.Coordonnees import Coordonnees
+import numpy as np
 
 
 class Codage(ABC):

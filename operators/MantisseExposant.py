@@ -1,4 +1,6 @@
 from operators.Codage import Codage
+from core.Coordonnees import Coordonnees
+import numpy as np
 
 def entier_en_binaire(n, nb_bits):
     """
@@ -56,7 +58,7 @@ class MantisseExposant(Codage):
         Fonction qui prend en entrée un nombre réel et retourne sa représentation en mantisse-exposant.
         La mantisse et l'exposant sont représentés en binaire avec un bit de signe.
         """
-        # Traiement du signe 
+        # Traitement du signe 
         signe_negatif = False
         if self.reel < 0:
             signe_negatif = True
@@ -118,10 +120,11 @@ class MantisseExposant(Codage):
         return res
 
     def code(self, coord: Coordonnees) -> None:
-        bits = []
+        bits_list = []
         for x in coord.coordonnees:
-            bits.extend(self.codeBinaire(float(x))) 
-        coord.coordonnees_codees = bits
+            bits = self.codeBinaire(float(x))
+            bits_list.append(np.array(bits))
+        coord.coordonnees_codees = np.array(bits_list, dtype=object)
 
     def __str__(self):
         """
@@ -145,31 +148,31 @@ class MantisseExposant(Codage):
         exposant = ''.join(map(str,coordonnees_binaires[-8:])) # les 8 derniers bits sont l'exposant
         mantisse = ''.join(map(str,coordonnees_binaires[:-8])) # le reste est la mantisse
 
-
         # Decodage de l'exposant
         exposant_decimal = binaire_en_entier(exposant)
         mantisse_decimal = binaire_en_entier(mantisse)
 
-        print(f"{mantisse_decimal / (10 ** 5)} x 10^{exposant_decimal}")
+        # Retourner la valeur réelle décodée
+        return (mantisse_decimal / (10 ** 5)) * (10 ** exposant_decimal)
 
     
+if __name__ == "__main__":
+    # Test de création 
+    ME = MantisseExposant()
+    ME2 = MantisseExposant()
 
-# Test de création 
-ME = MantisseExposant()
-ME2 = MantisseExposant()
+    print("ME", ME)
+    print("")
 
-print("ME", ME)
-print("")
+    coordonnees = ME.codeBinaire(12)
+    coordonnees2 = ME2.codeBinaire(-2251.3)
 
-coordonnees = ME.codeBinaire(12)
-coordonnees2 = ME2.codeBinaire(-2251.3)
+    print("Coordonnees 1 : ")
+    ME.afficherBinaire()
+    ME.decode(coordonnees)
+    print("")
 
-print("Coordonnees 1 : ")
-ME.afficherBinaire()
-ME.decode(coordonnees)
-print("")
-
-print("Coordonnees 2 : ")
-ME2.afficherBinaire()
-ME2.decode(coordonnees2)
-print("")
+    print("Coordonnees 2 : ")
+    ME2.afficherBinaire()
+    ME2.decode(coordonnees2)
+    print("")

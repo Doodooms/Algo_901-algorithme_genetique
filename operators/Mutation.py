@@ -9,7 +9,6 @@ class Mutation:
     """
     Classe qui permet d'effectuer une mutation sur un individu selon un certain taux de mutation
     Marche uniquement sur un codage binaire !
-    J'ai mis deux facon de voir je sais pas laquelle vous semble la plus logique
     """
 
     def __init__(self, taux_mutation: float, codage: Codage):

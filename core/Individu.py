@@ -10,6 +10,9 @@ class Individu():
     def __str__(self):
         return f"ID : {self.id}, coordonnées : {self.coordonnees}"
     
+    def __repr__(self):
+        return f"ID : {self.id}, coordonnées : {self.coordonnees}"
+    
 if __name__ == "__main__":
     import numpy as np
     c = Coordonnees(np.array([1,2,3]))

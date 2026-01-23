@@ -56,39 +56,46 @@ La classe `AlgorithmeGenetique` permet de lancer une simulation complète:
 
 Exemple :
 ```python
-from core.AlgorithmeGenetique import AlgorithmeGenetique
 # Exemple d'utilisation de la classe AlgorithmeGenetique
 def exemple_fitness_function(coordonnees: np.ndarray) -> float:
-  return -np.sum(coordonnees**2) + 10
+    return -np.sum(coordonnees**2) + 10
 
-  # Initialiser les opérateurs (exemples simples)
-  #codage = Codage() # Remplacer par une implémentation concrète
-  crossover = SimpleCrossover()
-  mutation = Mutation(0.05) # Remplacer par une implémentation concrète
-  codage = MantisseExposant()
-  tournoi = Selection_tournoi(Population()) # Population sera définie plus tard
-  tournoi_params = 5
+# Initialiser les opérateurs
+codage = MantisseExposant()
+crossover = SimpleCrossover(codage)
+mutation = Mutation(0.05, codage)
 
-  # Créer une instance de l'algorithme génétique
-  ag = AlgorithmeGenetique(
-      population_size=50,
-      dimension=2,
-      bounds=[(-5, 5), (-5, 5)],
-      codage_operator=codage,
-      crossover_operator=crossover,
-      mutation_operator=mutation,
-      selection_operator_type=tournoi,
-      fitness_function=exemple_fitness_function,
-      maximize_fitness=True,
-      taux_mutation=0.05,
-      selection_params=tournoi_params,
-      taux_crossover=0.7,
-      num_generations=100
-  )
+tournoi = Selection_tournoi(
+    None, taille_tournoi=3, taille_selection=10
+)  # Population sera définie plus tard
 
-  # Initialiser la population
-  ag._initialiser_population()
-  print(ag.population)
-  ag._selectionner_parents()
-  ag._reproduire()
+# Créer une instance de l'algorithme génétique
+ag = AlgorithmeGenetique(
+    population_size=50,
+    dimension=2,
+    bounds=[(-5, 5), (-5, 5)],
+    codage_operator=codage,
+    crossover_operator=crossover,
+    mutation_operator=mutation,
+    selection_operator=tournoi,
+    fitness_function=exemple_fitness_function,
+    maximize_fitness=True,
+    taux_mutation=0.05,
+    num_generations=100,
+)
+
+# Initialiser la population
+ag._initialiser_population()
+ag._evaluer_population()
+for t in range(
+    ag.num_generations
+):  # On fait évoluer la  population sur num_generations
+    parents = ag._selectionner_parents()
+    nouvelle_generation = ag._reproduire(parents)
+    ag._remplacer_population(nouvelle_generation)
+    ag._evaluer_population()
+print(ag.history)
+
+# On vérifie la convergence 
+print(f"Le résultat est attendu est 10 est le résultat de l'algo est : {ag.history['best_fitness'][-1]}")
 ```

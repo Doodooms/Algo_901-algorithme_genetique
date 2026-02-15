@@ -6,7 +6,7 @@ MAILHEBIAU Phoebus
 HERAUX Clémence   
 ------
 # <center> Algo_901-algorithme_genetique </center>
-<center> <i>Ce projet propose une implémentation <b>orientée objet</b> d’un algorithme génétique. Il permet de gérer une population d'individus, d'appliquer des opéarteurs génétiques et de simuler une évolution sur plusieurs générations. </i></center>
+<center> <i>Ce projet propose une implémentation <b>orientée objet</b> d’un algorithme génétique. Il permet de gérer une population d'individus, d'appliquer des opéarteurs génétiques et de simuler une évolution sur plusieurs générations. Le programme terminé est dans la branche rendu_final</i></center>
 
 ------
 

@@ -142,6 +142,7 @@ class Selection_naturelle(Selection):
 
         # Suppression
         self.population.retirer(individus_a_supprimer)
+        return self.population.liste_individus
 
 
 class Selection_Crossover(Selection):

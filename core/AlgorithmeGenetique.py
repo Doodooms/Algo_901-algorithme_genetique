@@ -1,7 +1,7 @@
-from operators.Codage import Codage # Importer la classe abstraite Codage
+from operators.Codage import CodageReel # Importer la classe abstraite Codage
 from operators.Crossover import Crossover, SimpleCrossover # Importer SimpleCrossover pour l'exemple
 from operators.Mutation import Mutation 
-from operators.Selection import Selection, Selection_roulette, Selection_tournoi 
+from operators.Selection import Selection, Selection_roulette, Selection_tournoi, Selection_naturelle
 from operators.MantisseExposant import MantisseExposant
 from core.Population import Population 
 from core.Individu import Individu
@@ -9,6 +9,8 @@ from core.Coordonnees import Coordonnees
 from operators.Performance import Performance # Importer Performance (ou la fonction de fitness directement si elle n'est pas encapsulée)
 import numpy as np 
 import random 
+from math import sin, sqrt
+
 class AlgorithmeGenetique:
     """
     Classe principale de l'algorithme génétique
@@ -24,7 +26,6 @@ class AlgorithmeGenetique:
         mutation_operator: Mutation,
         selection_operator : Selection, #  type de la classe de sélection (e.g., Selection_tournoi)
         fitness_function : Performance, #  la fonction de fitness pour évaluer les individus
-        maximize_fitness: bool = True, #  indique si on maximise ou minimise
         taux_mutation: float = 0.01, #  taux de mutation (peut être aussi dans mutation_operator)
         selection_params: dict = {}, #  paramètres spécifiques pour la sélection (e.g., taille_tournoi)
         taux_crossover: float = 0.8, #  probabilité qu'un crossover ait lieu
@@ -36,7 +37,6 @@ class AlgorithmeGenetique:
         self.bounds = bounds # [[min, max], [min, max], ...] pour chaque dimension
         self.fitness_function = fitness_function
         self.evaluateur = Performance(self.fitness_function)
-        self.maximize_fitness = maximize_fitness
         self.taux_mutation = taux_mutation # Peut être utilisé pour initialiser l'opérateur de mutation
         self.taux_crossover = taux_crossover
         self.num_generations = num_generations
@@ -92,10 +92,6 @@ class AlgorithmeGenetique:
 
             if individu.fitness is None:
                 raise ValueError(f"Fitness None pour l'individu {individu.id}. Vérifie Performance.evaluer().")
-
-            # Ajuster le score si on minimise (les opérateurs de sélection tendent à maximiser)
-            if not self.maximize_fitness:
-                individu.fitness *= -1 # Transformer la minimisation en maximisation
             
             # Mettre à jour le meilleur fitness et le meilleur individu
             if self.best_fitness is None or individu.fitness > self.best_fitness:
@@ -161,13 +157,17 @@ class AlgorithmeGenetique:
         """
         Remplace l'ancienne population par la nouvelle génération.
         """
-        self.population.liste_individus.sort(key=lambda ind: ind.fitness, reverse=self.maximize_fitness)
+        self.population.liste_individus.sort(key=lambda ind: ind.fitness)
         self.population = Population(nouvelle_generation)
     
 if __name__ == "__main__":
     # Exemple d'utilisation de la classe AlgorithmeGenetique
     def exemple_fitness_function(coordonnees: np.ndarray) -> float:
         return -np.sum(coordonnees**2) + 10
+    
+    def exemple_fitness_function2(coordonnees : np.ndarray) -> float:
+        return -(-coordonnees[0]*sin(sqrt(abs(coordonnees[0]))) - coordonnees[1]*sin(sqrt(abs(coordonnees[1]))))
+    # (-x * sin(sqrt(abs( x )))) + (-y * sin(sqrt(abs( y ))))
 
     # Initialiser les opérateurs
     codage = MantisseExposant()
@@ -180,15 +180,14 @@ if __name__ == "__main__":
 
     # Créer une instance de l'algorithme génétique
     ag = AlgorithmeGenetique(
-        population_size=50,
+        population_size=500,
         dimension=2,
-        bounds=[(-5, 5), (-5, 5)],
+        bounds=[(-500, 500), (-500, 500)],
         codage_operator=codage,
         crossover_operator=crossover,
         mutation_operator=mutation,
         selection_operator=tournoi,
         fitness_function=exemple_fitness_function,
-        maximize_fitness=True,
         taux_mutation=0.05,
         num_generations=100,
     )
@@ -206,4 +205,4 @@ if __name__ == "__main__":
     print(ag.history)
     
     # On vérifie la convergence 
-    print(f"Le résultat est attenu est 10 est le résultat de l'algo est : {ag.history['best_fitness'][-1]}")
+    print(f"Le résultat attendu est 10 et le résultat de l'algo est : {ag.history['best_fitness'][-1]}")

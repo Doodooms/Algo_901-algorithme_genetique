@@ -26,7 +26,7 @@ class CodageReel(Codage):
         """ "
         Transforme chaque élément de la liste en float
         """
-        coord.coordonnees_codees = coord.valeurs.astype(float)
+        coord.coordonnees_codees = coord.coordonnees_codees
 
 if __name__ == "__main__":
     x = np.array([1, 2.5, 3, 4.7])

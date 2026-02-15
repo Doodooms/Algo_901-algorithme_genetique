@@ -1,4 +1,4 @@
-from Individu import individu
+from core.Individu import Individu
 
 class population:
     def __init__(self, liste_individus : list[individu]):
@@ -25,13 +25,13 @@ class population:
 
 if __name__ == "__main__":
     import numpy as np
-    from Coordonnees import coordonnees
-    c1 = coordonnees(np.array([1,2]))
-    c2 = coordonnees(np.array([3,4]))
+    from core.Coordonnees import Coordonnees
+    c1 = Coordonnees(np.array([1,2]))
+    c2 = Coordonnees(np.array([3,4]))
     c2.coordonnees_codees = np.array([1, 0, 1, 0, 0, 1])
-    i1 = individu(1, c1)
-    i2 = individu(2, c2)
-    pop = population(i1)
+    i1 = Individu(1, c1)
+    i2 = Individu(2, c2)
+    pop = Population([i1])
     print(pop)
     pop.ajouter(i2)
     print(pop)
